@@ -1,29 +1,30 @@
 {
-    "name": "laravel-zero/laravel-zero",
-    "description": "The Laravel Zero Framework.",
-    "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
-    "homepage": "https://laravel-zero.com",
+    "name": "nisanov/ahsoka",
+    "description": "Ahsoka.",
+    "keywords": ["ahsoka"],
+    "homepage": "https://github.com/nisanov/ahsoka",
     "type": "project",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/laravel-zero/laravel-zero/issues",
-        "source": "https://github.com/laravel-zero/laravel-zero"
+        "issues": "https://github.com/nisanov/ahsoka/issues",
+        "source": "https://github.com/nisanov/ahsoka"
     },
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "Yasha Nisanov",
+            "email": "yasha.nisanov@gmail.com"
         }
     ],
     "require": {
-        "php": "^8.1",
-        "laminas/laminas-text": "^2.10",
-        "laravel-zero/framework": "^10.2",
-        "nunomaduro/termwind": "^1.15.1"
+        "php": "^8.1"
     },
     "require-dev": {
+        "laminas/laminas-text": "^2.10",
         "laravel/pint": "^1.13",
+        "laravel-zero/framework": "^10.2",
+        "laravel-zero/phar-updater": "^1.3",
         "mockery/mockery": "^1.6",
+        "nunomaduro/termwind": "^1.15.1",
         "pestphp/pest": "^2.22"
     },
     "autoload": {
@@ -48,5 +49,5 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "bin": ["ahsoka"]
+    "bin": ["builds/ahsoka"]
 }

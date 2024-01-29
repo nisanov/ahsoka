@@ -1,5 +1,7 @@
 # Ahsoka
 
+Built with https://laravel-zero.com
+
 ## Installation
 
 ```shell

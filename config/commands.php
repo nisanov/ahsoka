@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Laravel Zero will always run the command specified below when no command name is
-    | provided. Consider update the default command for single command applications.
+    | provided. Consider updating the default command for single command applications.
     | You cannot pass arguments to the default command because they are ignored.
     |
     */
@@ -50,7 +50,7 @@ return [
     |
     | Your application commands will always be visible on the application list
     | of commands. But you can still make them "hidden" specifying an array
-    | of commands below. All "hidden" commands can still be run/executed.
+    | of the commands below. All "hidden" commands can still be run/executed.
     |
     */
 
@@ -63,6 +63,19 @@ return [
         Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
         Illuminate\Foundation\Console\VendorPublishCommand::class,
         LaravelZero\Framework\Commands\StubPublishCommand::class,
+        Illuminate\Database\Console\Migrations\MigrateCommand::class,
+        Laravel\Tinker\Console\TinkerCommand::class,
+        NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::class,
+        Illuminate\Database\Console\Migrations\MigrateMakeCommand::class,
+        Illuminate\Database\Console\Migrations\FreshCommand::class,
+        Illuminate\Database\Console\Migrations\InstallCommand::class,
+        Illuminate\Database\Console\Migrations\RefreshCommand::class,
+        Illuminate\Database\Console\Migrations\ResetCommand::class,
+        Illuminate\Database\Console\Migrations\RollbackCommand::class,
+        Illuminate\Database\Console\Migrations\StatusCommand::class,
+        Illuminate\Database\Console\Seeds\SeedCommand::class,
+        Illuminate\Database\Console\WipeCommand::class,
+        LaravelZero\Framework\Components\Updater\SelfUpdateCommand::class,
     ],
 
     /*
@@ -72,7 +85,7 @@ return [
     |
     | Do you have a service provider that loads a list of commands that
     | you don't need? No problem. Laravel Zero allows you to specify
-    | below a list of commands that you don't to see in your app.
+    | below a list of commands that you don't want to see in your app.
     |
     */
 

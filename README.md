@@ -9,13 +9,11 @@ composer global require nisanov/ahsoka
 ```
 
 ```shell
-ahsoka db:install
-ahsoka db:migrate
+ahsoka app:initiate
 ```
 
 ## Self Update
 
 ```shell
-ahsoka self-update
-ahsoka db:migrate
+ahsoka app:update
 ```

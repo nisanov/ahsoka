@@ -6,8 +6,8 @@ namespace App\Commands;
 
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Support\Facades\Config;
-use RuntimeException;
-use function Termwind\{render};
+use Symfony\Component\Console\Command\Command;
+use UnexpectedValueException;
 
 class InitiateCommand extends Ahsoka
 {
@@ -27,45 +27,36 @@ class InitiateCommand extends Ahsoka
 
     /**
      * Execute the console command.
+     *
+     * @return int
      */
-    public function handle(): void
+    public function handle(): int
     {
         $app = $this->getApplicationName();
+
+        $this->output->write("$app Checking database: ");
+
         $database = Config::get('database.connections.sqlite.database');
         if (empty($database)) {
-            throw new RuntimeException("The sqlite database path must be configured.");
+            throw new UnexpectedValueException("The sqlite database path must be configured");
         }
 
-        $status = 'already exists';
         if (!file_exists($database)) {
-            $status = 'created';
+            $this->output->writeln("<comment>✘</comment> <comment>does not exist</comment>");
+            $this->output->write("$app Creating database: ");
             $directory = dirname($database);
             if (!is_dir($directory) && !mkdir($directory) && !is_dir($directory)) {
-                throw new RuntimeException("Directory [$directory] was not created.");
+                throw new UnexpectedValueException("Failed to create the directory: $directory");
             }
             if (!touch($database)) {
-                throw new RuntimeException("Failed to create the database: $database");
+                throw new UnexpectedValueException("Failed to create the database: $database");
             }
         }
 
-        render(<<<HTML
-            <div class="py-1 ml-2">
-                <div class="px-1 bg-blue-300 text-white">$app</div>
-                <span class="ml-1">
-                    Database $status: <em>$database</em>.
-                </span>
-            </div>
-        HTML);
+        $this->output->writeln("<info>✔</info> <comment>$database</comment>");
 
-        $this->runCommand(MigrateCommand::class, [], $this->output);
+        $this->call(MigrateCommand::class, ['--force' => null]);
 
-        render(<<<HTML
-            <div class="py-1 ml-2">
-                <div class="px-1 bg-blue-300 text-white">$app</div>
-                <span class="ml-1">
-                    Installation process complete!
-                </span>
-            </div>
-        HTML);
+        return Command::SUCCESS;
     }
 }

@@ -6,7 +6,6 @@ namespace App\Commands;
 
 use Illuminate\Support\Facades\Config;
 use LaravelZero\Framework\Commands\Command;
-use RuntimeException;
 
 abstract class Ahsoka extends Command
 {
@@ -18,10 +17,7 @@ abstract class Ahsoka extends Command
     public function getApplicationName(): string
     {
         $app = Config::get('app.name');
-        if (empty($app)) {
-            throw new RuntimeException("The application name must be configured.");
-        }
 
-        return $app;
+        return "<fg=white;bg=blue> $app </>";
     }
 }

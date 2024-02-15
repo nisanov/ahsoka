@@ -6,7 +6,15 @@ namespace App\Commands;
 
 use Illuminate\Support\Facades\Config;
 use LaravelZero\Framework\Commands\Command;
+use NunoMaduro\LaravelConsoleMenu\Menu;
+use NunoMaduro\LaravelConsoleTask\LaravelConsoleTaskServiceProvider;
 
+/**
+ * @method bool task(string $title, $task = null, $loadingText = 'loading...')
+ * @see LaravelConsoleTaskServiceProvider::boot()
+ * @method Menu menu(string $title = '', array $options = [])
+ * @see LaravelConsoleMenuServiceProvider::boot()
+ */
 abstract class Ahsoka extends Command
 {
     /**

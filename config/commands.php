@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'paths' => [app_path('Commands')],
+    'paths' => [],
 
     /*
     |--------------------------------------------------------------------------
@@ -40,7 +40,9 @@ return [
     */
 
     'add' => [
-        // ..
+        App\Commands\RunCommand::class,
+        App\Commands\MaintenanceDatabaseCommand::class,
+        App\Commands\MaintenanceUpdateCommand::class,
     ],
 
     /*
@@ -65,7 +67,6 @@ return [
         LaravelZero\Framework\Commands\StubPublishCommand::class,
         Illuminate\Database\Console\Migrations\MigrateCommand::class,
         Laravel\Tinker\Console\TinkerCommand::class,
-        NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::class,
         Illuminate\Database\Console\Migrations\MigrateMakeCommand::class,
         Illuminate\Database\Console\Migrations\FreshCommand::class,
         Illuminate\Database\Console\Migrations\InstallCommand::class,

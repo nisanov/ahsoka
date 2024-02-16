@@ -51,12 +51,6 @@ class RunCommand extends Ahsoka
             ->addSubMenu('Synchronize Issues', fn (CliMenuBuilder $builder) => $this->getSynchronizeIssuesMenu($builder))
             ->addSubMenu('Generate Graphs', fn (CliMenuBuilder $builder) => $this->getGenerateGraphsMenu($builder))
             ->addSubMenu('Manage Developers', fn (CliMenuBuilder $builder) => $this->getManageDeveloperMenu($builder))
-            ->addSubMenu('System Maintenance', fn (CliMenuBuilder $builder) => $builder
-                ->setTitle('System Maintenance')
-                ->addLineBreak()
-                ->addItem('Update Application', fn () => $this->call(SystemUpdateCommand::class))
-                ->addItem('Create Database', fn () => $this->call(SystemInstallCommand::class))
-            )
             ->open();
 
         $this->info("{$this->getApplicationName()} ♥ see you next time ♥");

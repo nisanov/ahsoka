@@ -7,6 +7,7 @@ namespace App\Processors;
 use App\Models\Developer;
 use App\Models\Issue;
 use App\Models\Server;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Carbon;
 
 abstract class Processor
@@ -37,6 +38,7 @@ abstract class Processor
      *
      * @param Carbon $month
      * @return array<int, array<string, string|int>>
+     * @throws RequestException
      */
     abstract public function getIssuesList(Carbon $month): array;
 

@@ -6,7 +6,6 @@ namespace App\Commands;
 
 use Humbug\SelfUpdate\Updater;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
-use LaravelZero\Framework\Components\Updater\Strategy\GithubStrategy;
 use Symfony\Component\Console\Command\Command;
 
 class SystemUpdateCommand extends Ahsoka

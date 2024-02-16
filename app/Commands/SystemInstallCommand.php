@@ -22,7 +22,7 @@ class SystemInstallCommand extends Ahsoka
      *
      * @var string
      */
-    protected $description = 'Create the database';
+    protected $description = 'Install the application';
 
     /**
      * Execute the console command.
@@ -31,9 +31,22 @@ class SystemInstallCommand extends Ahsoka
      */
     public function handle(): int
     {
-        $app = $this->getApplicationName();
+        $this->installFont();
+        $this->installDatabase();
 
-        $this->output->write("$app Checking font: ");
+        $this->call(MigrateCommand::class, ['--force' => null]);
+
+        return Command::SUCCESS;
+    }
+
+    /**
+     * Perform the font installation process.
+     *
+     * @return void
+     */
+    private function installFont(): void
+    {
+        $this->output->write("{$this->getApplicationName()} Checking font: ");
 
         $path = config('font.path');
         if (empty($path)) {
@@ -42,7 +55,7 @@ class SystemInstallCommand extends Ahsoka
 
         if (!file_exists($path)) {
             $this->output->writeln("<comment>✘</comment> <comment>does not exist</comment>");
-            $this->output->write("$app Retrieving font: ");
+            $this->output->write("{$this->getApplicationName()} Retrieving font: ");
             $directory = dirname($path);
             if (!is_dir($directory) && !mkdir($directory) && !is_dir($directory)) {
                 throw new UnexpectedValueException("Failed to create the directory: $directory");
@@ -61,8 +74,16 @@ class SystemInstallCommand extends Ahsoka
         }
 
         $this->output->writeln("<info>✔</info> <comment>$path</comment>");
+    }
 
-        $this->output->write("$app Checking database: ");
+    /**
+     * Perform the database installation process.
+     *
+     * @return void
+     */
+    private function installDatabase(): void
+    {
+        $this->output->write("{$this->getApplicationName()} Checking database: ");
 
         $database = config('database.connections.sqlite.database');
         if (empty($database)) {
@@ -71,7 +92,7 @@ class SystemInstallCommand extends Ahsoka
 
         if (!file_exists($database)) {
             $this->output->writeln("<comment>✘</comment> <comment>does not exist</comment>");
-            $this->output->write("$app Creating database: ");
+            $this->output->write("{$this->getApplicationName()} Creating database: ");
             $directory = dirname($database);
             if (!is_dir($directory) && !mkdir($directory) && !is_dir($directory)) {
                 throw new UnexpectedValueException("Failed to create the directory: $directory");
@@ -82,9 +103,5 @@ class SystemInstallCommand extends Ahsoka
         }
 
         $this->output->writeln("<info>✔</info> <comment>$database</comment>");
-
-        $this->call(MigrateCommand::class, ['--force' => null]);
-
-        return Command::SUCCESS;
     }
 }

@@ -41,8 +41,7 @@ return [
 
     'add' => [
         App\Commands\RunCommand::class,
-        App\Commands\MaintenanceDatabaseCommand::class,
-        App\Commands\MaintenanceUpdateCommand::class,
+        App\Commands\SystemInstallCommand::class,
     ],
 
     /*

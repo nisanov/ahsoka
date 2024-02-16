@@ -54,8 +54,8 @@ class RunCommand extends Ahsoka
             ->addSubMenu('System Maintenance', fn (CliMenuBuilder $builder) => $builder
                 ->setTitle('System Maintenance')
                 ->addLineBreak()
-                ->addItem('Update Application', fn () => $this->call(MaintenanceUpdateCommand::class))
-                ->addItem('Create Database', fn () => $this->call(MaintenanceDatabaseCommand::class))
+                ->addItem('Update Application', fn () => $this->call(SystemUpdateCommand::class))
+                ->addItem('Create Database', fn () => $this->call(SystemInstallCommand::class))
             )
             ->open();
 

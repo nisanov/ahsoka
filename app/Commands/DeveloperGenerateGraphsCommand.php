@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Commands;
 
+use App\Abilities\InteractsWithBrowser;
 use App\Abilities\InteractsWithYears;
 use App\Models\Developer;
 use Code16\CarbonBusiness\BusinessDays;
 use CpChart\Data;
 use CpChart\Image;
+use DivisionByZeroError;
 use Exception;
 use Illuminate\Support\Carbon;
 use Symfony\Component\Console\Command\Command;
@@ -19,12 +21,12 @@ use function array_filter;
 use function array_keys;
 use function array_sum;
 use function count;
-use function exec;
 use function floor;
 
 class DeveloperGenerateGraphsCommand extends Ahsoka
 {
     use InteractsWithYears;
+    use InteractsWithBrowser;
 
     /**
      * @var string
@@ -86,26 +88,22 @@ class DeveloperGenerateGraphsCommand extends Ahsoka
 
         $this->output->writeln("Generating $graph graph for developer <info>$developer->name</info> for <comment>{$starts->format('y')}/{$ends->format('y')}</comment>");
 
-        $months = [];
-        foreach ($starts->monthsUntil($ends) as $month /** @var Carbon $month */) {
-            $expected = VOID;
-            $actual = $developer->issues()->where(['month' => $month])->sum('points') ?: VOID;
-            if ($actual !== VOID) {
-                $periodStarts = $month->copy()->startOfMonth();
-                $periodEnds = $month->copy()->endOfMonth();
-                if ($periodEnds->isFuture()) {
-                    $periodEnds = Carbon::today()->endOfDay();
-                }
-                $expected = floor(( $this->businessDays->daysBetween($periodStarts, $periodEnds) ?: 1 ) / 5 * $developer->points_per_week);
-            }
-            $months[$month->format('M')] = compact('expected', 'actual');
-        }
+        $months = $this->getMonths($starts, $ends, $developer);
 
         $meanExpected = array_filter(array_column($months, 'expected'), fn ($points) => $points !== VOID);
         $meanActual = array_filter(array_column($months, 'actual'), fn ($points) => $points !== VOID);
 
-        $meanExpected = array_sum($meanExpected) / count($meanExpected);
-        $meanActual = array_sum($meanActual) / count($meanActual);
+        try {
+            $meanExpected = array_sum($meanExpected) / count($meanExpected);
+        } catch (DivisionByZeroError) {
+            $meanExpected = VOID;
+        }
+
+        try {
+            $meanActual = array_sum($meanActual) / count($meanActual);
+        } catch (DivisionByZeroError) {
+            $meanActual = VOID;
+        }
 
         foreach ($ends->addMonth()->monthsUntil($terminus) as $month /** @var Carbon $month */) {
             $months[$month->format('M')] = [
@@ -127,7 +125,12 @@ class DeveloperGenerateGraphsCommand extends Ahsoka
         $data->setAbscissa('Labels');
 
         $image = new Image(1000, 600, $data);
-        $image->drawText(450, 45, "$developer->name's Story Points Graph for {$starts->format('y')}/{$ends->format('y')}", ['FontSize' => 20, 'Align' => TEXT_ALIGN_MIDDLEMIDDLE]);
+        $image->setFontProperties(['FontName' => config('font.path'), 'FontSize' => 13]);
+        $image->drawText(450, 45, "$developer->name's Story Points Graph for {$starts->format('y')}/{$ends->format('y')}", [
+            'FontName' => config('font.path'),
+            'FontSize' => 20,
+            'Align' => TEXT_ALIGN_MIDDLEMIDDLE,
+        ]);
         $image->setGraphArea(100, 70, 900, 500);
         $image->drawFilledRectangle(100, 70, 900, 500, [
             'R' => 255,
@@ -138,7 +141,6 @@ class DeveloperGenerateGraphsCommand extends Ahsoka
         ]);
         $image->drawScale(['DrawSubTicks' => true]);
         $image->setShadow(true, ['X' => 1, 'Y' => 1, 'R' => 0, 'G' => 0, 'B' => 0, 'Alpha' => 10]);
-        $image->setFontProperties(['FontSize' => 13]);
 
         $data->setSerieDrawable(self::LABEL_EXPECTED_STORY_POINTS);
         $data->setSerieDrawable(self::LABEL_ACTUAL_STORY_POINTS);
@@ -159,17 +161,36 @@ class DeveloperGenerateGraphsCommand extends Ahsoka
         $image->setShadow(false);
         $image->drawLegend(200, 550, ['Style' => LEGEND_NOBORDER, 'Mode' => LEGEND_HORIZONTAL]);
 
-        switch (PHP_OS_FAMILY) {
-            case 'Darwin':
-                exec("open -a Firefox '{$image->toDataURI()}'");
-                break;
-            case 'Linux':
-                exec("xdg-open '{$image->toDataURI()}'");
-                break;
-            default:
-                $this->output->writeln($image->toDataURI());
-        }
+        $this->openBrowserImage($image, $this->output);
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Get the expected and actual points over each applicable month.
+     *
+     * @param Carbon $starts
+     * @param Carbon $ends
+     * @param Developer $developer
+     * @return array
+     */
+    public function getMonths(Carbon $starts, Carbon $ends, Developer $developer): array
+    {
+        $months = [];
+        foreach ($starts->monthsUntil($ends) as $month /** @var Carbon $month */) {
+            $expected = VOID;
+            $actual = $developer->issues()->where(['month' => $month])->sum('points') ?: VOID;
+            if ($actual !== VOID) {
+                $periodStarts = $month->copy()->startOfMonth();
+                $periodEnds = $month->copy()->endOfMonth();
+                if ($periodEnds->isFuture()) {
+                    $periodEnds = Carbon::today()->endOfDay();
+                }
+                $expected = floor(( $this->businessDays->daysBetween($periodStarts, $periodEnds) ?: 1 ) / 5 * $developer->points_per_week);
+            }
+            $months[$month->format('M')] = compact('expected', 'actual');
+        }
+
+        return $months;
     }
 }

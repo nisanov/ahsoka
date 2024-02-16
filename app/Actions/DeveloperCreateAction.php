@@ -53,12 +53,21 @@ class DeveloperCreateAction extends Action
 
         $parent = $menu->getParent();
         if ($parent instanceof CliMenu) {
-            $item = $parent->getItemByIndex(1); // synchronize issues
+            $item = $parent->getItemByIndex(1); // Synchronize Issues
             if ($item instanceof MenuMenuItem) {
                 $menu = $item->getSubMenu();
                 $menu->setItems([
                     new LineBreakItem(),
                     new SelectableItem($developer->name, static fn (CliMenu $menu) => app(DeveloperSynchronizeIssuesAction::class)($command, $menu)),
+                    ...array_slice($menu->getItems(), 1),
+                ]);
+            }
+            $item = $parent->getItemByIndex(2); // Generate Graphs
+            if ($item instanceof MenuMenuItem) {
+                $menu = $item->getSubMenu();
+                $menu->setItems([
+                    new LineBreakItem(),
+                    new SelectableItem($developer->name, static fn (CliMenu $menu) => app(DeveloperGenerateGraphsAction::class)($command, $menu)),
                     ...array_slice($menu->getItems(), 1),
                 ]);
             }

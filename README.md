@@ -9,11 +9,16 @@ composer global require nisanov/ahsoka
 ```
 
 ```shell
-ahsoka app:initiate
+ahsoka system:install
 ```
-
-## Self Update
+## Run Application
 
 ```shell
-ahsoka app:update
+ahsoka run
+```
+
+## Update Application
+
+```shell
+ahsoka system:update
 ```

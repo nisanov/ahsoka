@@ -6,8 +6,8 @@ namespace Database\Seeders;
 
 use App\Models\Developer;
 use App\Models\Server;
-use App\Processors\AglProcessor;
-use App\Processors\SpcProcessor;
+use App\Processors\AglJira;
+use App\Processors\SpcJira;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -25,14 +25,14 @@ class DatabaseSeeder extends Seeder
             'name' => 'SPC Jira',
             'api' => 'http://jira.southernphone.net.au:8080/rest/api/2/search/',
             'browse' => 'http://jira.southernphone.net.au:8080/browse/',
-            'processor' => SpcProcessor::class,
+            'processor' => SpcJira::class,
         ]);
         $servers->create([
             'active' => true,
             'name' => 'AGL Jira',
             'api' => 'https://aglenergy.atlassian.net/rest/api/3/search/',
             'browse' => 'https://aglenergy.atlassian.net/browse/',
-            'processor' => AglProcessor::class,
+            'processor' => AglJira::class,
         ]);
     }
 }

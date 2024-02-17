@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Commands;
 
-use App\Actions\DeveloperCreateAction;
-use App\Actions\DeveloperGenerateGraphsAction;
+use App\Actions\CreateNewDeveloperAction;
+use App\Actions\GenerateGraphsAction;
 use App\Actions\DeveloperManagementAction;
-use App\Actions\DeveloperSynchronizeIssuesAction;
+use App\Actions\SynchronizeIssuesAction;
+use App\Actions\SynchronizeHolidaysAction;
 use App\Models\Developer;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 use PhpSchool\CliMenu\CliMenu;
@@ -51,6 +52,7 @@ class RunCommand extends Ahsoka
             ->addSubMenu('Synchronize Issues', fn (CliMenuBuilder $builder) => $this->getSynchronizeIssuesMenu($builder))
             ->addSubMenu('Generate Graphs', fn (CliMenuBuilder $builder) => $this->getGenerateGraphsMenu($builder))
             ->addSubMenu('Manage Developers', fn (CliMenuBuilder $builder) => $this->getManageDeveloperMenu($builder))
+            ->addMenuItem(new SelectableItem('Synchronize Holidays', $this->getAction(SynchronizeHolidaysAction::class)))
             ->open();
 
         $this->info("{$this->getApplicationName()} ♥ see you next time ♥");
@@ -80,7 +82,7 @@ class RunCommand extends Ahsoka
         $builder->setTitle('Synchronize Issues For');
         $builder->addLineBreak();
 
-        foreach ($this->getDeveloperSelectableItemActions($this->getAction(DeveloperSynchronizeIssuesAction::class)) as $action) {
+        foreach ($this->getDeveloperSelectableItemActions($this->getAction(SynchronizeIssuesAction::class)) as $action) {
             $builder->addMenuItem($action);
         }
 
@@ -98,7 +100,7 @@ class RunCommand extends Ahsoka
         $builder->setTitle('Generate Graphs For');
         $builder->addLineBreak();
 
-        foreach ($this->getDeveloperSelectableItemActions($this->getAction(DeveloperGenerateGraphsAction::class)) as $action) {
+        foreach ($this->getDeveloperSelectableItemActions($this->getAction(GenerateGraphsAction::class)) as $action) {
             $builder->addMenuItem($action);
         }
 
@@ -122,7 +124,7 @@ class RunCommand extends Ahsoka
             $builder->addMenuItem($action);
         }
 
-        $builder->addMenuItem(new SelectableItem('Create New Developer', $this->getAction(DeveloperCreateAction::class)));
+        $builder->addMenuItem(new SelectableItem('Create New Developer', $this->getAction(CreateNewDeveloperAction::class)));
 
         return $builder;
     }

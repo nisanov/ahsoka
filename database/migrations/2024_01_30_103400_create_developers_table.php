@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\Models\Holiday\State;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,7 @@ return new class extends Migration
         Schema::create('developers', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->enum('state', State::values())->default(State::VICTORIA->value);
             $table->integer('points_per_week')->default(3);
             $table->integer('coverage_per_week')->default(80);
             $table->timestamps();

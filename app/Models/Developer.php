@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Models\Holiday\State;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string $name
+ * @property State $state
  * @property int $points_per_week
  * @property int $coverage_per_week
  * @property Carbon $created_at
@@ -32,6 +34,7 @@ class Developer extends Model
      */
     protected $fillable = [
         'name',
+        'state',
         'points_per_week',
         'coverage_per_week',
     ];
@@ -42,6 +45,7 @@ class Developer extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'state' => State::class,
         'points_per_week' => 'integer',
         'coverage_per_week' => 'integer',
     ];

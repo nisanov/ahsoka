@@ -31,6 +31,7 @@ class Server extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'active',
         'name',
         'api',
         'browse',

@@ -8,8 +8,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | This value determines if the app name should be represented as an
-    | ASCII logo. This file provides a sane default location for all
-    | information concerning the logo and is display customization.
+    | ASCII logo.
+    | This file provides a default location for all information concerning
+    | the logo and is display customization.
     |
     */
 
@@ -38,7 +39,7 @@ return [
     |
     */
 
-    'font' => \LaravelZero\Framework\Components\Logo\FigletString::DEFAULT_FONT,
+    'font' => LaravelZero\Framework\Components\Logo\FigletString::DEFAULT_FONT,
 
     /*
     |--------------------------------------------------------------------------
@@ -71,9 +72,10 @@ return [
     | Right To Left
     |--------------------------------------------------------------------------
     |
-    | This option defines the option in which the text is written. By, default
-    | the setting of the font-file is used. When justification is not defined,
-    | a text written from right-to-left is automatically right-aligned.
+    | This option defines the option in which the text is written.
+    | By default, the setting of the font-file is used.
+    | When justification is not defined, a text written from right-to-left is
+    | automatically right-aligned.
     |
     | Possible values: "right-to-left", "left-to-right", null
     |

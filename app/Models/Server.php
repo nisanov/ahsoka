@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\Models\Server\Type;
+use App\Processors\Processor;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
@@ -19,7 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string $api
  * @property string $token
  * @property boolean $active
- * @property string $processor
+ * @property Processor $processor
  * @property Carbon $created_at
  * @property Carbon $updated_at
  *
@@ -60,6 +62,18 @@ class Server extends Model
         'token' => 'encrypted',
         'active' => 'boolean',
     ];
+
+    /**
+     * Get the server processor instance.
+     *
+     * @return Attribute
+     */
+    protected function processor(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $processor) => app($processor),
+        );
+    }
 
     /**
      * The developer that belongs to the server.

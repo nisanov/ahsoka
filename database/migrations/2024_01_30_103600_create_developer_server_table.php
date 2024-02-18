@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('developer_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('server_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('username');
+            $table->text('password')->nullable();
             $table->timestamps();
         });
     }

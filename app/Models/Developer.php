@@ -57,7 +57,7 @@ class Developer extends Model
      */
     public function servers(): BelongsToMany
     {
-        return $this->belongsToMany(Server::class)->using(DeveloperServer::class)->withPivot('username')->withTimestamps();
+        return $this->belongsToMany(Server::class)->using(DeveloperServer::class)->withPivot('username', 'password')->withTimestamps();
     }
 
     /**

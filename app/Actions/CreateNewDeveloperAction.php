@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Commands\RunCommand;
+use App\Enums\Menu\Prompt;
+use App\Enums\Models\Server\Type;
 use App\Models\Developer;
 use App\Models\Server;
+use Illuminate\Database\Eloquent\Collection;
 use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\MenuItem\LineBreakItem;
 use PhpSchool\CliMenu\MenuItem\MenuMenuItem;
@@ -36,14 +39,17 @@ class CreateNewDeveloperAction extends Action
      */
     public function __invoke(RunCommand $command, CliMenu $menu): void
     {
-        $name = $menu->askText()->setPromptText("What is the developer's name?")->setPlaceholderText('Citizen Developer')->ask();
+        $name = $menu->askText($this->getPromptStyle(Prompt::INFO))->setPromptText("What is the developer's name?")->setPlaceholderText('Citizen Developer')->ask();
         $developer = $this->developers->create(['name' => $name->fetch()]);
-        foreach ($this->servers->get() as $server) {
-            $username = $menu->askText()->setPromptText("What is the $server->name username?")->setPlaceholderText('citizen.developer')->ask();
+
+        /** @var Collection<Server> $servers */
+        $servers = $this->servers->where(['type' => Type::JIRA, 'active' => true])->get();
+        foreach ($servers as $server) {
+            $username = $menu->askText($this->getPromptStyle(Prompt::INFO))->setPromptText("What is the $server->name username?")->setPlaceholderText('citizen.developer')->ask();
             $developer->servers()->attach($server->id, ['username' => $username->fetch()]);
         }
 
-        $menu->flash("Created a new developer named: $developer->name")->display();
+        $menu->flash("Created a new developer named: $developer->name", $this->getPromptStyle(Prompt::SUCCESS))->display();
         $menu->setItems([
             new LineBreakItem(),
             new SelectableItem($developer->name, static fn (CliMenu $menu) => app(DeveloperManagementAction::class)($command, $menu)),

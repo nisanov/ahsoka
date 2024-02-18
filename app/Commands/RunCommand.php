@@ -104,7 +104,7 @@ class RunCommand extends Ahsoka
             $builder->addMenuItem($action);
         }
 
-        $builder->addMenuItem(new SelectableItem('Entire Development Team', fn (CliMenu $menu) => $menu->flash("Not Implemented Yet")->display()));
+        $builder->addMenuItem(new SelectableItem(GenerateGraphsAction::ENTIRE_DEVELOPMENT_TEAM, $this->getAction(GenerateGraphsAction::class)));
 
         return $builder;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\Menu\Prompt;
 use App\Models\Server;
 use App\Traits\InteractsWithYears;
 use App\Commands\RunCommand;
@@ -48,13 +49,13 @@ class SynchronizeHolidaysAction extends Action
 
             $server = $this->servers->where('type', ServerType::HOLIDAY)->first();
             if ($server->token === null) {
-                $server->token = $menu->askPassword()
+                $server->token = $menu->askPassword($this->getPromptStyle(Prompt::INFO))
                     ->setPromptText("What is the API key?")
                     ->ask()
                     ->fetch();
 
-                $response = $menu->askText()
-                    ->setPromptText("Would you like to store the token (only slightly secure)?")
+                $response = $menu->askText($this->getPromptStyle(Prompt::INFO))
+                    ->setPromptText("Would you like to store the token (not secure)?")
                     ->setPlaceholderText('Yes')
                     ->ask()
                     ->fetch();
@@ -90,11 +91,11 @@ class SynchronizeHolidaysAction extends Action
 
             $command->getOutput()->writeln("Synchronized holidays <comment>successfully</comment>");
 
-            $menu->flash("Synchronization process has complete successfully")->display();
+            $menu->flash("Synchronization process has completed successfully", $this->getPromptStyle(Prompt::SUCCESS))->display();
 
         } catch (RequestException $exception) {
 
-            $menu->flash("Synchronization failed: {$exception->response->reason()}")->display();
+            $menu->flash("Synchronization failed: {$exception->response->reason()}", $this->getPromptStyle(Prompt::ALERT))->display();
         }
     }
 

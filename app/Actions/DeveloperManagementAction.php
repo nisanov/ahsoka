@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Commands\RunCommand;
+use App\Enums\Menu\Prompt;
 use PhpSchool\CliMenu\CliMenu;
 
 class DeveloperManagementAction extends Action
@@ -18,6 +19,6 @@ class DeveloperManagementAction extends Action
      */
     public function __invoke(RunCommand $command, CliMenu $menu): void
     {
-        $menu->flash("Not Implemented for: {$menu->getSelectedItem()->getText()}")->display();
+        $menu->flash("Not Implemented for: {$menu->getSelectedItem()->getText()}!", $this->getPromptStyle(Prompt::ALERT))->display();
     }
 }

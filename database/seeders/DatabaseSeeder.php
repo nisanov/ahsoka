@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\Developer;
+use App\Enums\Models\Server\Type;
 use App\Models\Server;
 use App\Processors\AglJira;
 use App\Processors\SpcJira;
@@ -21,16 +21,28 @@ class DatabaseSeeder extends Seeder
     {
         $servers = new Server();
         $servers->create([
-            'active' => true,
+            'type' => Type::JIRA,
             'name' => 'SPC Jira',
             'api' => 'http://jira.southernphone.net.au:8080/rest/api/2/search/',
+            'token' => null,
             'processor' => SpcJira::class,
+            'active' => true,
         ]);
         $servers->create([
-            'active' => true,
+            'type' => Type::JIRA,
             'name' => 'AGL Jira',
             'api' => 'https://aglenergy.atlassian.net/rest/api/3/search/',
+            'token' => null,
             'processor' => AglJira::class,
+            'active' => true,
+        ]);
+        $servers->create([
+            'type' => Type::HOLIDAY,
+            'name' => 'Calendarific',
+            'api' => 'https://calendarific.com/api/v2/holidays/',
+            'token' => null,
+            'processor' => null,
+            'active' => true,
         ]);
     }
 }

@@ -44,6 +44,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | The encryption configuration
+    |--------------------------------------------------------------------------
+    |
+    | The cipher and key used in encryption.
+    |
+    */
+
+    'cipher' => 'AES-256-CBC',
+    'key' => 'base64:RR480kEd+Yen6cCMkXmmGUz38cJYwlP/qNctQ7MA6zo=',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
@@ -69,7 +81,7 @@ return [
     'providers' => [
         App\Providers\AppServiceProvider::class,
         Intonate\TinkerZero\TinkerZeroServiceProvider::class,
-        LaravelZero\Framework\Components\Updater\Provider::class,
+        Illuminate\Encryption\EncryptionServiceProvider::class,
     ],
 
 ];

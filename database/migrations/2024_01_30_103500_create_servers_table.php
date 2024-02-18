@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\Models\Server\Type;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +16,12 @@ return new class extends Migration
     {
         Schema::create('servers', static function (Blueprint $table) {
             $table->id();
-            $table->boolean('active')->default(true);
+            $table->enum('type', Type::values());
             $table->string('name');
             $table->string('api');
-            $table->string('processor');
+            $table->text('token')->nullable();
+            $table->string('processor')->nullable();
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Models\Server;
 use App\Traits\InteractsWithYears;
 use App\Commands\RunCommand;
 use App\Enums\Models\Holiday\State;
 use App\Enums\Models\Holiday\Type;
+use App\Enums\Models\Server\Type as ServerType;
 use App\Models\Holiday;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Client\RequestException;
@@ -27,6 +29,7 @@ class SynchronizeHolidaysAction extends Action
      * @return void
      */
     public function __construct(
+        private readonly Server $servers,
         private readonly Holiday $holidays,
     ) {
         //...
@@ -43,21 +46,32 @@ class SynchronizeHolidaysAction extends Action
     {
         try {
 
-            $api = config('holidays.api');
-            $key = $menu->askPassword()
-                ->setPromptText("What is the API key?")
-                ->ask()
-                ->fetch();
+            $server = $this->servers->where('type', ServerType::HOLIDAY)->first();
+            if ($server->token === null) {
+                $server->token = $menu->askPassword()
+                    ->setPromptText("What is the API key?")
+                    ->ask()
+                    ->fetch();
+
+                $response = $menu->askText()
+                    ->setPromptText("Would you like to store the token (only slightly secure)?")
+                    ->setPlaceholderText('Yes')
+                    ->ask()
+                    ->fetch();
+                if ($response === 'Yes') {
+                    $server->save();
+                }
+            }
 
             $command->getOutput()->writeln("Synchronizing holidays...");
 
             foreach (CarbonPeriod::create(Carbon::today()->subYear(), '1 year', 3) as $period) {
 
                 $year = $period->format('Y');
-                $holidays = $this->scan($api, $key, $year);
+                $holidays = $this->scan($server->api, $server->token, $year);
 
                 $progress = $command->getOutput()->createProgressBar(count($holidays));
-                $progress->setFormat("Querying <info>$api</info> server for <comment>$year</comment> %current%/%max% [%bar%] %percent:3s%%");
+                $progress->setFormat("Querying <info>$server->api</info> server for <comment>$year</comment> %current%/%max% [%bar%] %percent:3s%%");
                 $progress->start();
 
                 foreach ($holidays as $holiday) {

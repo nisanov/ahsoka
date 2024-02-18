@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Models\Server\Type;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,9 +14,11 @@ use Illuminate\Support\Carbon;
  * @mixin Builder
  *
  * @property int $id
- * @property boolean $active
+ * @property Type $type
  * @property string $name
  * @property string $api
+ * @property string $token
+ * @property boolean $active
  * @property string $processor
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -30,10 +33,21 @@ class Server extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'active',
+        'type',
         'name',
         'api',
+        'token',
         'processor',
+        'active',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<string>
+     */
+    protected $hidden = [
+        'token',
     ];
 
     /**
@@ -42,6 +56,8 @@ class Server extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'type' => Type::class,
+        'token' => 'encrypted',
         'active' => 'boolean',
     ];
 

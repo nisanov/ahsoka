@@ -16,7 +16,6 @@ use Illuminate\Support\Carbon;
  * @property boolean $active
  * @property string $name
  * @property string $api
- * @property string $browse
  * @property string $processor
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -34,7 +33,6 @@ class Server extends Model
         'active',
         'name',
         'api',
-        'browse',
         'processor',
     ];
 

@@ -24,14 +24,12 @@ class DatabaseSeeder extends Seeder
             'active' => true,
             'name' => 'SPC Jira',
             'api' => 'http://jira.southernphone.net.au:8080/rest/api/2/search/',
-            'browse' => 'http://jira.southernphone.net.au:8080/browse/',
             'processor' => SpcJira::class,
         ]);
         $servers->create([
             'active' => true,
             'name' => 'AGL Jira',
             'api' => 'https://aglenergy.atlassian.net/rest/api/3/search/',
-            'browse' => 'https://aglenergy.atlassian.net/browse/',
             'processor' => AglJira::class,
         ]);
     }

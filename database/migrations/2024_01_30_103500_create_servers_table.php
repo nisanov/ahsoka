@@ -18,7 +18,6 @@ return new class extends Migration
             $table->boolean('active')->default(true);
             $table->string('name');
             $table->string('api');
-            $table->string('browse')->nullable();
             $table->string('processor');
             $table->timestamps();
         });

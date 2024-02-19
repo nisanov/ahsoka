@@ -69,4 +69,14 @@ class Developer extends Model
     {
         return $this->hasMany(Issue::class);
     }
+
+    /**
+     * Get the leaves related to this developer instance.
+     *
+     * @return HasMany
+     */
+    public function leaves(): HasMany
+    {
+        return $this->hasMany(Leave::class);
+    }
 }

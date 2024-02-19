@@ -6,16 +6,15 @@ namespace App\Actions;
 
 use App\Enums\Menu\Prompt;
 use App\Models\Holiday;
+use App\Services\WorkedDays;
 use App\Traits\InteractsWithBrowser;
 use App\Traits\InteractsWithYears;
 use App\Commands\RunCommand;
 use App\Models\Developer;
-use Code16\CarbonBusiness\BusinessDays;
 use CpChart\Data;
 use CpChart\Image;
 use DivisionByZeroError;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use PhpSchool\CliMenu\CliMenu;
 use UnexpectedValueException;
@@ -43,19 +42,19 @@ class GenerateGraphsAction extends Action
     /**
      * @var string
      */
-    public const LABEL_MEAN_STORY_POINTS = 'Mean Story Points';
+    public const LABEL_STORY_POINTS_MEAN_SCORE = 'Story Points Mean Score';
 
     /**
      * Construct the action instance.
      *
      * @param Holiday $holidays
      * @param Developer $developers
-     * @param BusinessDays $businessDays
+     * @param WorkedDays $workedDays
      */
     public function __construct(
         private readonly Holiday $holidays,
         private readonly Developer $developers,
-        private readonly BusinessDays $businessDays,
+        private readonly WorkedDays $workedDays,
     ){
         //...
     }
@@ -80,10 +79,6 @@ class GenerateGraphsAction extends Action
         if (!$developer instanceof Developer) {
             throw new UnexpectedValueException("The developer is not an instance of \App\Models\Developer.");
         }
-
-        $this->businessDays->addHolidays($this->holidays->where(
-            fn (Builder $query) => $query->where('state', '=', $developer->state)->orWhereNull('state')
-        )->pluck('date')->toArray());
 
         [$starts, $ends, $terminus] = $this->getRangeForFinancialYear($menu->askText($this->getPromptStyle(Prompt::INFO))
             ->setPromptText("Graph for what financial year?")
@@ -127,10 +122,10 @@ class GenerateGraphsAction extends Action
         $data = new Data();
         $data->addPoints(array_column($months, 'expected'), self::LABEL_EXPECTED_STORY_POINTS);
         $data->addPoints(array_column($months, 'actual'), self::LABEL_ACTUAL_STORY_POINTS);
-        $data->addPoints(array_fill(0, 12, $meanActual), self::LABEL_MEAN_STORY_POINTS);
+        $data->addPoints(array_fill(0, 12, $meanActual), self::LABEL_STORY_POINTS_MEAN_SCORE);
         $data->setPalette(self::LABEL_EXPECTED_STORY_POINTS, ['R' => 65, 'G' => 105, 'B' => 226]);
         $data->setPalette(self::LABEL_ACTUAL_STORY_POINTS, ['R' => 244, 'G' => 158, 'B' => 12]);
-        $data->setPalette(self::LABEL_MEAN_STORY_POINTS, $meanActual >= $meanExpected ? ['R' => 46, 'G' => 139, 'B' => 87] : ['R' => 220, 'G' => 20, 'B' => 60]);
+        $data->setPalette(self::LABEL_STORY_POINTS_MEAN_SCORE, $meanActual >= $meanExpected ? ['R' => 46, 'G' => 139, 'B' => 87] : ['R' => 220, 'G' => 20, 'B' => 60]);
         $data->setAxisName(0, 'Story Points');
         $data->addPoints(array_keys($months), 'Labels');
         $data->setSerieDescription('Labels', 'Months');
@@ -156,19 +151,19 @@ class GenerateGraphsAction extends Action
 
         $data->setSerieDrawable(self::LABEL_EXPECTED_STORY_POINTS);
         $data->setSerieDrawable(self::LABEL_ACTUAL_STORY_POINTS);
-        $data->setSerieDrawable(self::LABEL_MEAN_STORY_POINTS, false);
+        $data->setSerieDrawable(self::LABEL_STORY_POINTS_MEAN_SCORE, false);
 
         $image->drawBarChart(['DisplayValues' => true, 'DisplayColor' => DISPLAY_AUTO, 'Rounded' => true, 'Surrounding' => 60]);
 
         $data->setSerieDrawable(self::LABEL_EXPECTED_STORY_POINTS, false);
         $data->setSerieDrawable(self::LABEL_ACTUAL_STORY_POINTS, false);
-        $data->setSerieDrawable(self::LABEL_MEAN_STORY_POINTS);
+        $data->setSerieDrawable(self::LABEL_STORY_POINTS_MEAN_SCORE);
 
         $image->drawLineChart(['DisplayValues' => true, 'DisplayColor' => DISPLAY_AUTO, 'Rounded' => true]);
 
         $data->setSerieDrawable(self::LABEL_EXPECTED_STORY_POINTS);
         $data->setSerieDrawable(self::LABEL_ACTUAL_STORY_POINTS);
-        $data->setSerieDrawable(self::LABEL_MEAN_STORY_POINTS);
+        $data->setSerieDrawable(self::LABEL_STORY_POINTS_MEAN_SCORE);
 
         $image->setShadow(false);
         $image->drawLegend(200, 550, ['Style' => LEGEND_NOBORDER, 'Mode' => LEGEND_HORIZONTAL]);
@@ -188,6 +183,8 @@ class GenerateGraphsAction extends Action
      */
     private function getMonths(Carbon $starts, Carbon $ends, Developer $developer): array
     {
+        $this->workedDays->setDeveloper($developer);
+
         $months = [];
         foreach ($starts->monthsUntil($ends) as $month /** @var Carbon $month */) {
             $expected = VOID;
@@ -198,7 +195,7 @@ class GenerateGraphsAction extends Action
                 if ($periodEnds->isFuture()) {
                     $periodEnds = Carbon::today()->endOfDay();
                 }
-                $expected = floor(( $this->businessDays->daysBetween($periodStarts, $periodEnds) ?: 1 ) / 5 * $developer->points_per_week);
+                $expected = floor(( $this->workedDays->daysBetween($periodStarts, $periodEnds) ?: 1 ) / 5 * $developer->points_per_week);
             }
             $months[$month->format('M')] = compact('expected', 'actual');
         }

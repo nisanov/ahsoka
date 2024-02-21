@@ -31,8 +31,8 @@ class SystemInstallCommand extends Ahsoka
      */
     public function handle(): int
     {
-        $this->installFont();
         $this->installDatabase();
+        $this->installFont();
 
         $this->call(MigrateCommand::class, ['--force' => null]);
 

@@ -23,7 +23,7 @@ trait InteractsWithBrowser
                 exec("open -a Firefox '{$image->toDataURI()}'");
                 break;
             case 'Linux':
-                exec("xdg-open '{$image->toDataURI()}'");
+                exec("echo -n '{$image->toDataURI()}' | xclip");
                 break;
             default:
                 $output->writeln($image->toDataURI());

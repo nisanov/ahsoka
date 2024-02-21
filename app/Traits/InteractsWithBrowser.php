@@ -22,10 +22,8 @@ trait InteractsWithBrowser
             case 'Darwin':
                 exec("open -a Firefox '{$image->toDataURI()}'");
                 break;
-            case 'Linux':
-                exec("echo -n '{$image->toDataURI()}' | xclip");
-                break;
             default:
+                exec("echo -n '{$image->toDataURI()}' | xclip");
                 $output->writeln($image->toDataURI());
         }
     }

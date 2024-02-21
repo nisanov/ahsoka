@@ -169,8 +169,6 @@ class GenerateGraphsAction extends Action
         $image->drawLegend(200, 550, ['Style' => LEGEND_NOBORDER, 'Mode' => LEGEND_HORIZONTAL]);
 
         $this->openBrowserImage($image, $command->getOutput());
-
-        $menu->flash("Generate graphs process has complete successfully", $this->getPromptStyle(Prompt::SUCCESS))->display();
     }
 
     /**
